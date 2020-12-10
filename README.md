@@ -1,6 +1,6 @@
 # BLYAT Compose Files
 
-A collection of compose files used by BLYAT. If you are going to self-host, a 2 GB RAM VPS should be more than enough for personal use.
+A collection of compose files used by BLYAT. If you are going to self-host, a 1 GB RAM VPS should be enough for personal use.
 
 WARNING: if you are going to self-host, read through the files before you run anything. Some of them won't work out of the box and require minor configuration (which is pretty easy, though)
 
