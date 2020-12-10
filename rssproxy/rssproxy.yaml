@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  rssproxy:
+    image: damoeb/rss-proxy
+    container_name: rssproxy
+    restart: always
+    networks:
+      - web
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.rssproxy.rule=Host(`rssproxy.blyat.org`)
+      - traefik.http.routers.rssproxy.entrypoints=websecure
+      - traefik.http.services.rssproxy.loadbalancer.server.port=3000
+
+networks:
+  web:
+    external: true

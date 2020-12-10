@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  hnrss:
+    image: dwemerx/hrs
+    container_name: hnrss
+    restart: always
+    networks:
+      - web
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.hnrss.rule=Host(`hnrss.blyat.org`)
+      - traefik.http.routers.hnrss.entrypoints=websecure
+
+networks:
+  web:
+    external: true

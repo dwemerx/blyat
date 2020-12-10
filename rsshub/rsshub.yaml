@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  rsshub:
+    image: diygod/rsshub
+    container_name: rsshub
+    restart: always
+    networks:
+      - web
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.rsshub.rule=Host(`rsshub.blyat.org`)
+      - traefik.http.routers.rsshub.entrypoints=websecure
+
+networks:
+  web:
+    external: true

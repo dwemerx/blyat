@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  postgres-freshrss:
+    image: postgres:12-alpine
+    container_name: postgres-freshrss
+    restart: always
+    volumes:
+      - /data/freshrss/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=freshrss
+      - POSTGRES_PASSWORD=iAmIdiot # Postgres allows password to be up to 100 characters
+      - POSTGRES_DB=freshrss
+    networks:
+      - freshrss-db
+
+  freshrss:
+    image: freshrss/freshrss:latest
+    container_name: freshrss
+    restart: always
+    depends_on:
+      - postgres-freshrss
+    volumes:
+      - /data/freshrss/data:/var/www/FreshRSS/data
+      - /data/freshrss/extensions/:/var/www/FreshRSS/extensions
+    environment:
+      - CRON_MIN=1,18,36,54
+      - TZ=Europe/Helsinki
+    networks:
+      - freshrss-db
+      - web
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.freshrss.rule=Host(`freshrss.blyat.org`)
+      - traefik.http.routers.freshrss.entrypoints=websecure
+
+networks:
+  web:
+    external: true
+  freshrss-db:

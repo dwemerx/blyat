@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  rssbridge:
+    image: rssbridge/rss-bridge
+    container_name: rssbridge
+    restart: always
+    networks:
+      - web
+    volumes:
+      - /data/rssbridge/whitelist.txt:/app/whitelist.txt # To enable all bridges, just create a file with a * in it.
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.rssbridge.rule=Host(`rssbridge.blyat.org`)
+      - traefik.http.routers.rssbridge.entrypoints=websecure
+
+networks:
+  web:
+    external: true

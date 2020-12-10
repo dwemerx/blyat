@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  morss:
+    image: dwemerx/morss
+    container_name: morss
+    restart: always
+    networks:
+      - web
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.morss.rule=Host(`morss.blyat.org`)
+      - traefik.http.routers.morss.entrypoints=websecure
+      - traefik.http.services.morss.loadbalancer.server.port=8080
+
+networks:
+  web:
+    external: true

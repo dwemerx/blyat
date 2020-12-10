@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  rtr:
+    image: johnny5w/reddit-top-rss
+    container_name: rtr
+    restart: always
+    environment:
+      - DEFAULT_SUBREDDIT=privacy
+    networks:
+      - web
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.rtr.rule=Host(`rtr.blyat.org`)
+      - traefik.http.routers.rtr.entrypoints=websecure
+
+networks:
+  web:
+    external: true

@@ -1,0 +1,28 @@
+# For email delivery to work properly, you'll have to create some DNS records.
+# More info - https://github.com/leafac/kill-the-newsletter.com
+
+version: '3.8'
+services:
+  ktn:
+    image: dwemerx/ktn:latest
+    container_name: ktn
+    restart: always
+    environment:
+      - WEB_PORT=8000
+      - EMAIL_PORT=2525
+      - BASE_URL=https://ktn.blyat.org
+      - EMAIL_DOMAIN=ktn.blyat.org
+      - ISSUE_REPORT=mailto:kill-the-newsletter@leafac.com
+    ports:
+      - 25:2525 # Traefik doesn't support SMTP.
+    networks:
+      - web
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ktn.rule=Host(`ktn.blyat.org`)
+      - traefik.http.routers.ktn.entrypoints=websecure
+      - traefik.http.services.ktn.loadbalancer.server.port=8000
+
+networks:
+  web:
+    external: true

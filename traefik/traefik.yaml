@@ -1,0 +1,59 @@
+version: '3.8'
+services:
+  traefik:
+    image: traefik:latest # At the moment of writing, the latest traefik is 'v2.3'. Replace 'latest' with it if you want to ensure that there are no breaking changes in the future (if you use it with ).
+    container_name: traefik
+    restart: always
+    command:
+      - --providers.docker=true
+      - --providers.docker.network=web
+      - --providers.docker.exposedByDefault=false
+      - --providers.file.filename=/dynamic.yaml
+      - --providers.file.watch=true
+      - --entryPoints.web.address=:80
+      - --entryPoints.web.http.redirections.entryPoint.to=websecure
+      - --entryPoints.web.http.redirections.entryPoint.scheme=https
+      - --entryPoints.websecure.address=:443
+      - --entryPoints.websecure.http.tls=true
+      - --entryPoints.websecure.http.redirections.entryPoint.scheme=https
+      - --entryPoints.websecure.http.redirections.entryPoint.permanent=true
+      - --entryPoints.websecure.http.tls.certresolver=le
+      - --certificatesResolvers.le.acme.tlsChallenge=true
+      - --certificatesResolvers.le.acme.httpChallenge=true
+      - --certificatesResolvers.le.acme.httpChallenge.entryPoint=web
+      - --certificatesResolvers.le.acme.storage=/acme.json
+
+      - --certificatesResolvers.le.acme.email=__YOUR_VALID_EMAIL_ADDRESS__ # yeah put it right here
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:8080
+    networks:
+      - web
+    labels:
+      - traefik.enable=true
+
+      - traefik.http.middlewares.securedheaders.headers.SSLRedirect=true
+      - traefik.http.middlewares.securedheaders.headers.frameDeny=true
+      - traefik.http.middlewares.securedheaders.headers.forceSTSHeader=true
+      - traefik.http.middlewares.securedheaders.headers.sslRedirect=true
+      - traefik.http.middlewares.securedheaders.headers.stsPreload=true
+      - traefik.http.middlewares.securedheaders.headers.ContentTypeNosniff=true
+      - traefik.http.middlewares.securedheaders.headers.BrowserXssFilter=true
+      - traefik.http.middlewares.securedheaders.headers.stsIncludeSubdomains=true
+      - traefik.http.middlewares.securedheaders.headers.stsSeconds=31536000
+
+      - traefik.http.middlewares.compress.compress=true
+
+      - traefik.http.routers.http_catchall.rule=HostRegexp(`{any:.*}`)
+      - traefik.http.routers.http_catchall.entrypoints=web
+      - traefik.http.routers.http_catchall.middlewares=compress, securedheaders
+      - traefik.http.routers.http_catchall.tls.certresolver=le
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./acme.json:/acme.json # You'll have to create this file yourself and do 'chmod 600 acme.json' to set proper permissions. Otherwise you'll get an error.
+      - ./traefik/dynamic.yaml:/dynamic.yaml
+
+networks:
+  web:
+    external: true
