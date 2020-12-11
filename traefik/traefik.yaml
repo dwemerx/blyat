@@ -45,9 +45,13 @@ services:
 
       - traefik.http.middlewares.compress.compress=true
 
+      - traefik.http.middlewares.ratelimit.ratelimit.average=10
+      - traefik.http.middlewares.ratelimit.ratelimit.period=10s
+      - traefik.http.middlewares.ratelimit.ratelimit.burst=1
+
       - traefik.http.routers.http_catchall.rule=HostRegexp(`{any:.*}`)
       - traefik.http.routers.http_catchall.entrypoints=web
-      - traefik.http.routers.http_catchall.middlewares=compress, securedheaders
+      - traefik.http.routers.http_catchall.middlewares=compress, securedheaders, ratelimit
       - traefik.http.routers.http_catchall.tls.certresolver=le
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
