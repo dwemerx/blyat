@@ -5,7 +5,7 @@ services:
     container_name: rtr
     restart: always
     environment:
-      - DEFAULT_SUBREDDIT=privacy
+      - DEFAULT_SUBREDDIT=rss
     networks:
       - web
     labels:
